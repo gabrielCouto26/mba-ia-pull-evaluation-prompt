@@ -9,7 +9,7 @@ Este script:
 SIMPLIFICADO: Usa serialização nativa do LangChain para extrair prompts.
 """
 
-import os
+# import os
 import sys
 from pathlib import Path
 from dotenv import load_dotenv
@@ -20,12 +20,20 @@ load_dotenv()
 
 
 def pull_prompts_from_langsmith():
-    ...
+    prompt = hub.pull("create-plan")
+    return prompt
 
 
 def main():
     """Função principal"""
-    ...
+    required_vars = ["LANGSMITH_API_KEY"]
+    if not check_env_vars(required_vars):
+        return 1
+    print_section_header("Iniciando pull de prompts do LangSmith")
+    prompt = pull_prompts_from_langsmith()
+    save_yaml(prompt, Path("prompts/bug_to_user_story_v1.yml"))
+    print("Pull de prompts concluído com sucesso!")
+    return 0
 
 
 if __name__ == "__main__":
