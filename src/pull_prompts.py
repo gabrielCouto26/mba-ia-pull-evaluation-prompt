@@ -20,7 +20,7 @@ load_dotenv()
 
 
 def pull_prompts_from_langsmith():
-    prompt = hub.pull("create-plan")
+    prompt = hub.pull("leonanluppi/bug_to_user_story_v1")
     return prompt
 
 
