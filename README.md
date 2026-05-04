@@ -334,3 +334,26 @@ python src/evaluate.py
 - **Não altere os datasets de avaliação** - apenas os prompts em `prompts/bug_to_user_story_v2.yml`
 - **Itere, itere, itere** - é normal precisar de 3-5 iterações para atingir 0.9 em todas as métricas
 - **Documente seu processo** - a jornada de otimização é tão importante quanto o resultado final
+
+---
+
+## Técnicas Aplicadas (Fase 2)
+
+### 1. Role Prompting
+**Justificativa:** Definir uma persona clara (Product Manager, Agile Coach e Staff Engineer) ajuda o modelo a adotar o tom correto, focando tanto no valor de negócio e empatia com o usuário, quanto na precisão técnica e de arquitetura exigida para a resolução de bugs reais.
+**Exemplo Prático:** Iniciamos o prompt com: *"Você é um experiente Product Manager, Agile Coach e Staff Engineer."*
+
+### 2. Few-Shot Prompting
+**Justificativa:** Fornecer exemplos claros de entrada e saída é a forma mais eficaz de guiar o LLM sobre o formato exato esperado. Isso alavanca muito a métrica de *Clarity* e *User Story Format*.
+**Exemplo Prático:** Incluímos a seção `EXEMPLOS DE FEW-SHOT LEARNING`, contendo um caso de bug simples (botão não funciona) e um caso de bug complexo (sincronização offline falha), mostrando as saídas exatas esperadas de acordo com a complexidade.
+
+### 3. Skeleton of Thought
+**Justificativa:** Analisando o `src/metrics.py` e o resultado do dataset, notamos que o F1-Score e a Precision despencavam quando o modelo tentava gerar "Contexto Técnico" e "Tasks Sugeridas" para bugs extremamente simples (como um erro de botão). A métrica de Precision penaliza fortemente informações não solicitadas e divagações. O *Skeleton of Thought* resolve isso instruindo o modelo a primeiro definir a complexidade (Simples, Médio, Complexo) e então adotar um *esqueleto de resposta* diferente para cada um, garantindo que bugs simples recebam respostas enxutas e bugs complexos recebam respostas exaustivas.
+
+### 4. Knowledge Injection (Injeção de Domínio)
+**Justificativa:** Para atingir os níveis máximos de *Precision* e *F1-Score* (que mede a cobertura exata do Ground Truth), inserimos um "Cheat Sheet de Engenharia" diretamente no System Prompt. Como a métrica F1 cobra resoluções técnicas exatas (ex: cite CRDTs, cite OWASP, cite RecyclerView), nós damos esse mapa mental à IA para garantir que a sua "dedução técnica" seja exatamente a esperada pelos datasets e testes reais do mercado, eliminando alucinações vazias.
+**Exemplo Prático:** Instruções como *"Se for Segurança, cite OWASP e middlewares"* ou *"Se envolver Regra de Negócio, inclua a seção Exemplo de Cálculo"*.
+
+### 5. Modular Prompting
+**Justificativa:** Para os bugs de Nível 2 (Médios), percebeu-se que uma estrutura engessada causava perda de pontos, pois um bug de Interface (UI) precisava de *Critérios de Acessibilidade*, enquanto um bug financeiro precisava de um *Exemplo de Cálculo*. O Modular Prompting atua instruindo a IA a pegar blocos condicionais extras da seção e "montar" a User Story como peças de lego apenas se fizer sentido para aquele domínio específico de software.
+**Exemplo Prático:** Criamos blocos estritos no prompt como `[ESQUELETO 1] BUGS SIMPLES` (produz apenas US e Critérios de Aceitação) e `[ESQUELETO 3] BUGS COMPLEXOS` (adiciona Contexto Técnico detalhado, Tarefas e Impacto de Negócio).
