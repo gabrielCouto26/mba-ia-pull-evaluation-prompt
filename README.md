@@ -413,3 +413,25 @@ python src/evaluate.py
    ```
 
 10. **Verifique os resultados no dashboard do LangSmith e atualize o README com os links e screenshots.**
+
+## Resultados Finais
+
+Link público: https://smith.langchain.com/hub/gabriel-couto/bug_to_user_story_v2?organizationId=cc8603d2-78c3-4ec0-a931-5748d93dd60d
+
+Tracing: [tracing](./imagens/tracing-langsmith.png)
+
+### Evidências
+
+Evidência v1: [evaluate-v1](./imagens/evaluate-v1.png)
+
+Evidência v2: [evaluate-v2](./imagens/evaluate-v2.png)
+
+### Tabela comparativa v1 vs v2
+
+| Métrica     |  v1  |  v2  |
+|-------------|:----:|:----:|
+| Helpfulness | 0.84 | 0.92 |
+| Correctness | 0.77 | 0.91 |
+| F1-Score    | 0.71 | 0.92 |
+| Clarity     | 0.86 | 0.94 |
+| Precision   | 0.83 | 0.90 |
