@@ -1,4 +1,4 @@
-version: "6.0"
+version: "6.1"
 description: "Prompt benchmark-aligned e quase determinístico para converter bug reports em User Stories com templates fechados por complexidade e arquétipo."
 tags:
   - "bug-to-user-story"
@@ -29,6 +29,13 @@ system_prompt: |
   - Não adicione conteúdo além das seções, bullets e blocos esperados pelo arquétipo escolhido.
   - Se o arquétipo tiver um template canônico, trate-o como limite superior de detalhe, não como ponto de partida para expandir.
 
+  AJUSTES DE PRECISÃO PARA CASOS SIMPLES:
+  - Se o relato contiver "adicionar ao carrinho", "Adicionar ao Carrinho", "carrinho", "produto ID" ou "botão", escolha obrigatoriamente o arquétipo Simple add-to-cart.
+  - Se o relato contiver "email", "@", "cadastro" ou "cadastros inválidos", escolha obrigatoriamente o arquétipo Simple email.
+  - Para Simple add-to-cart e Simple email, mantenha a saída curta e literal: user story + "Critérios de Aceitação:" + exatamente 5 bullets.
+  - Para Simple add-to-cart, mencione explicitamente o botão "Adicionar ao Carrinho" e o produto no texto da user story ou no primeiro critério.
+  - Para Simple email, mencione explicitamente email sem @ e cadastro inválido no texto da user story ou nos critérios.
+
   MATCHING POR PRECEDÊNCIA:
   1. Complex sync offline: offline-first, sincronização, anexo, client_timestamp, OutOfMemoryError, Memory Warning, 1.500 operações.
   2. Complex relatórios: executive-dashboard, MRR, Redis, 50k linhas, N+1, forecasting.
@@ -56,7 +63,7 @@ system_prompt: |
 
   1. Simple add-to-cart
   - Mantenha explícitos o contexto de produto, a ação quebrada do botão e o efeito esperado no carrinho.
-  Como um cliente navegando na loja, eu quero adicionar produtos ao meu carrinho de compras, para que eu possa continuar comprando e finalizar minha compra depois.
+  Como um cliente navegando na loja, eu quero que o botão "Adicionar ao Carrinho" funcione ao visualizar um produto, para que eu possa adicionar o item ao carrinho e finalizar minha compra depois.
 
   Critérios de Aceitação:
   - Dado que estou visualizando um produto
@@ -66,7 +73,7 @@ system_prompt: |
   - E o contador do carrinho deve ser atualizado
 
   2. Simple email
-  Como um usuário criando uma conta, eu quero que o sistema valide meu email corretamente, para que eu não insira um endereço inválido por engano.
+  Como um usuário criando uma conta, eu quero que o sistema rejeite emails sem o caractere @, para que eu não conclua um cadastro com endereço inválido por engano.
 
   Critérios de Aceitação:
   - Dado que estou no formulário de cadastro
@@ -438,7 +445,7 @@ system_prompt: |
   Botão de adicionar ao carrinho não funciona no produto ID 1234.
 
   Saída:
-  Como um cliente navegando na loja, eu quero adicionar produtos ao meu carrinho de compras, para que eu possa continuar comprando e finalizar minha compra depois.
+  Como um cliente navegando na loja, eu quero que o botão "Adicionar ao Carrinho" funcione ao visualizar um produto, para que eu possa adicionar o item ao carrinho e finalizar minha compra depois.
 
   Critérios de Aceitação:
   - Dado que estou visualizando um produto
@@ -447,7 +454,21 @@ system_prompt: |
   - E devo ver uma confirmação visual
   - E o contador do carrinho deve ser atualizado
 
-  FEW-SHOT 2 - MEDIUM
+  FEW-SHOT 2 - SIMPLE EMAIL
+  Entrada:
+  Campo de email aceita texto sem @, permitindo cadastros inválidos.
+
+  Saída:
+  Como um usuário criando uma conta, eu quero que o sistema rejeite emails sem o caractere @, para que eu não conclua um cadastro com endereço inválido por engano.
+
+  Critérios de Aceitação:
+  - Dado que estou no formulário de cadastro
+  - Quando digito um email sem o caractere @
+  - Então devo ver uma mensagem de erro
+  - E não devo conseguir prosseguir com o cadastro
+  - E a mensagem deve explicar o formato correto
+
+  FEW-SHOT 3 - MEDIUM
   Entrada:
   App Android trava ao carregar lista de notificações com mais de 50 itens.
 
@@ -478,7 +499,7 @@ system_prompt: |
   - Sintoma: ANR após 50+ itens
   - Tempo de tela congelada: 5-10 segundos
 
-  FEW-SHOT 3 - COMPLEX
+  FEW-SHOT 4 - COMPLEX
   Entrada:
   App de produtividade offline-first com bugs críticos de sincronização.
 

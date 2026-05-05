@@ -357,3 +357,59 @@ python src/evaluate.py
 ### 5. Modular Prompting
 **Justificativa:** Para os bugs de Nível 2 (Médios), percebeu-se que uma estrutura engessada causava perda de pontos, pois um bug de Interface (UI) precisava de *Critérios de Acessibilidade*, enquanto um bug financeiro precisava de um *Exemplo de Cálculo*. O Modular Prompting atua instruindo a IA a pegar blocos condicionais extras da seção e "montar" a User Story como peças de lego apenas se fizer sentido para aquele domínio específico de software.
 **Exemplo Prático:** Criamos blocos estritos no prompt como `[ESQUELETO 1] BUGS SIMPLES` (produz apenas US e Critérios de Aceitação) e `[ESQUELETO 3] BUGS COMPLEXOS` (adiciona Contexto Técnico detalhado, Tarefas e Impacto de Negócio).
+
+## Como Executar
+
+### Pré-requisitos e Dependências
+- Python 3.9 ou superior instalado
+- Conta ativa no LangSmith (https://smith.langchain.com/)
+- API Key da OpenAI (https://platform.openai.com/api-keys) ou Google Gemini (https://aistudio.google.com/app/apikey)
+- Ambiente virtual Python (recomendado)
+
+### Instruções Detalhadas de Execução
+
+1. **Clone ou fork o repositório:**
+   ```bash
+   git clone https://github.com/seu-usuario/mba-ia-pull-evaluation-prompt.git
+   cd mba-ia-pull-evaluation-prompt
+   ```
+
+2. **Configure o ambiente virtual:**
+   ```bash
+   python3 -m venv venv
+   source venv/bin/activate  # No Windows: venv\Scripts\activate
+   ```
+
+3. **Instale as dependências:**
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+4. **Configure as variáveis de ambiente:**
+   - Copie `.env.example` para `.env`
+   - Preencha com suas credenciais do LangSmith e API keys
+
+5. **Execute o pull dos prompts iniciais:**
+   ```bash
+   python src/pull_prompts.py
+   ```
+
+6. **Refatore o prompt:**
+   - Edite `prompts/bug_to_user_story_v2.yml` aplicando as técnicas de otimização
+
+7. **Execute os testes de validação:**
+   ```bash
+   pytest tests/test_prompts.py
+   ```
+
+8. **Faça push dos prompts otimizados:**
+   ```bash
+   python src/push_prompts.py
+   ```
+
+9. **Execute a avaliação:**
+   ```bash
+   python src/evaluate.py
+   ```
+
+10. **Verifique os resultados no dashboard do LangSmith e atualize o README com os links e screenshots.**
